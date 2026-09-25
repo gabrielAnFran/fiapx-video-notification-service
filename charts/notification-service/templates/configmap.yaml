@@ -1,0 +1,10 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ .Release.Name }}-notification-service-config
+  labels:
+    app.kubernetes.io/name: notification-service
+    app.kubernetes.io/instance: {{ .Release.Name }}
+data:
+  NOTIFICATION_PORT: {{ .Values.env.NOTIFICATION_PORT | quote }}
+  SMTP_FROM_EMAIL: {{ .Values.env.SMTP_FROM_EMAIL | quote }}

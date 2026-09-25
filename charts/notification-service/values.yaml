@@ -1,0 +1,42 @@
+image:
+  # Each cmd/ binary is built as its own image tag via `docker build --build-arg TARGET=<cmd>`.
+  repository: ghcr.io/gabrielanfran/fiapx-video-notification-service
+  tags:
+    server: server-latest
+    worker: worker-latest
+  pullPolicy: IfNotPresent
+
+server:
+  replicas: 1
+  port: 8083
+  resources:
+    requests:
+      cpu: 50m
+      memory: 64Mi
+    limits:
+      cpu: 250m
+      memory: 128Mi
+
+worker:
+  replicas: 1
+  resources:
+    requests:
+      cpu: 50m
+      memory: 64Mi
+    limits:
+      cpu: 250m
+      memory: 128Mi
+
+env:
+  NOTIFICATION_PORT: "8083"
+  SMTP_FROM_EMAIL: "no-reply@fiapx.local"
+
+secret:
+  # Not committed with real values; overridden via --set or a sealed secret /
+  # external secret operator in each environment.
+  dbDSN: "host=postgres user=postgres password=postgres dbname=notification_service port=5432 sslmode=disable"
+  amqpURL: "amqp://guest:guest@rabbitmq:5672/"
+  smtpHost: ""
+  smtpPort: ""
+  smtpUser: ""
+  smtpPassword: ""
