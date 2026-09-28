@@ -110,6 +110,18 @@ func TestProcessedEventRepository_IsProcessed_MarkProcessed_Idempotent(t *testin
 	assert.True(t, processed)
 }
 
+func TestProcessedEventRepository_IsProcessed_CanceledContext_ReturnsError(t *testing.T) {
+	db := newTestDB(t)
+	truncateAll(t, db)
+	repo := infradb.NewNotificationRepository(db)
+
+	ctx, cancel := context.WithCancel(context.Background())
+	cancel()
+
+	_, err := repo.IsProcessed(ctx, uuid.New())
+	assert.Error(t, err)
+}
+
 func TestProcessedEventRepository_IsProcessed_UnknownEventIsFalse(t *testing.T) {
 	db := newTestDB(t)
 	truncateAll(t, db)

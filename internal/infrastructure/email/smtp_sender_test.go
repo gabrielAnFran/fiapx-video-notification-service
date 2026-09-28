@@ -23,6 +23,15 @@ func TestSend_NotConfigured_MissingPortOnly_NoOp(t *testing.T) {
 	require.NoError(t, err)
 }
 
+func TestSend_ConnectionRefused_ReturnsError(t *testing.T) {
+	// Port 1 on localhost has nothing listening, so the SMTP dial fails
+	// fast and deterministically — exercises Send's/sendEmail's error path
+	// without needing a real (or fake) SMTP server.
+	s := NewSender("127.0.0.1", "1", "", "", "no-reply@fiapx.local")
+	err := s.Send("user@example.com", Notification{Type: "COMPLETED", OriginalFilename: "x.mp4"})
+	assert.Error(t, err)
+}
+
 func TestBuildSubject_Completed(t *testing.T) {
 	n := Notification{OriginalFilename: "ferias-2026.mp4", Type: "COMPLETED"}
 	subject := buildSubject(n)
